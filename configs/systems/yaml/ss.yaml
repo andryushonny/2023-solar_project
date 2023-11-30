@@ -1,0 +1,73 @@
+# Солнечная система
+- type: Star
+  R: 30
+  color: yellow
+  m: 1.98892e+32
+  x: -100
+  y: -100
+  v_x: -1.0e+3
+  v_y: -1.0e+3
+- type: Planet # Меркурий
+  R: 3
+  color: orange
+  m: 3.302e+10
+  x: 5.7909e+9
+  y: 0
+  v_x: -3.0e+3
+  v_y: 3.787e+3
+- type: Planet # Венера
+  R: 3
+  color: blue
+  m: 4.869e+20
+  x: 1.0821e+9
+  y: 0
+  v_x: 5.0e+3
+  v_y: -5.502e+3
+- type: Planet # Земля
+  R: 3
+  color: green
+  m: 5.974e+25
+  x: 1.496e+9
+  y: 0
+  v_x: 0
+  v_y: 2.976e+2
+- type: Planet # Марс
+  R: 3
+  color: red
+  m: 6.419e+25
+  x: 2.2794e+9
+  y: 0
+  v_x: 0
+  v_y: 2.413e+2
+- type: Planet # Юпитер
+  R: 5
+  color: brown
+  m: 1.899e+25
+  x: 7.7841e+9
+  y: 0
+  v_x: -1.307e+2
+  v_y: 1.307e+2
+- type: Planet # Сатурн
+  R: 5
+  color: white
+  m: 5.685e+25
+  x: 1.4294e+9
+  y: 0
+  v_x: -10.0e+3
+  v_y: 9.67e+2
+- type: Planet # Уран
+  R: 6
+  color: gray
+  m: 8.685e+25
+  x: 2.871e+9
+  y: 0
+  v_x: -6.84e+2
+  v_y: -6.84e+2
+- type: Planet # Нептун
+  R: 9
+  color: blue
+  m: 1.024e+26
+  x: 4.4983e+9
+  y: 0
+  v_x: -10.0e+1
+  v_y: -15.48e+2
