@@ -151,7 +151,8 @@ def main():
         if obj.type == 'star':
             create_star_image(space,obj)
         elif obj.type == 'planet':
-            create_star_image(space,obj)
+            create_planet_image(space,obj)
+
     root.mainloop()
     print('Modelling finished!')
 
