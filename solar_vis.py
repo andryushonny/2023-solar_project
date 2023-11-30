@@ -15,7 +15,7 @@ window_width = 800
 window_height = 800
 """Высота окна"""
 
-scale_factor = 10
+scale_factor = 100
 """Масштабирование экранных координат по отношению к физическим.
 Тип: float
 Мера: количество пикселей на один метр."""
@@ -54,7 +54,7 @@ def scale_y(y):
     **y** — y-координата модели.
     """
 
-    return 3*y+10  # FIXME: not done yet
+    return int(y*scale_factor) + window_height//2  # FIXME: not done yet
 
 
 def create_star_image(space, star):
