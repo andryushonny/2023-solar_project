@@ -1,0 +1,57 @@
+[33mcommit 072407286bfc108c84e7e4a2aa52453eba1ed911[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 0f7c4ac d842661
+Author: Andrey Lyapeikov <andrey.quant@yandex.ru>
+Date:   Thu Nov 30 14:39:32 2023 +0300
+
+    Merge branch 'master' of https://github.com/andryushonny/2023-solar_project
+
+[33mcommit 0f7c4accaa7135f65343fd5b5ef4985832ecc4d7[m
+Author: Andrey Lyapeikov <andrey.quant@yandex.ru>
+Date:   Thu Nov 30 14:36:59 2023 +0300
+
+    fix: calculating forces
+
+[33mcommit d842661bc5db7be907f1a9fd9e03b573a1cc765d[m
+Author: Arseniy Goryaev <goryaev@mail.ru>
+Date:   Thu Nov 30 14:28:59 2023 +0300
+
+    fix: forces fix
+
+[33mcommit 67b37d4bacb36be20e7c41c0c8d843a1fc4e3c98[m
+Author: Andrey Lyapeikov <andrey.quant@yandex.ru>
+Date:   Thu Nov 30 13:51:08 2023 +0300
+
+    fixed: forked, parse params fix
+
+[33mcommit a2df8244e8e07a313879c2bf322f8567fff2b00d[m
+Merge: 98ce6a1 8835b69
+Author: Timofey Khirianov <tkhirianov@gmail.com>
+Date:   Mon Nov 14 08:25:31 2016 +0300
+
+    Merge pull request #3 from vasyarv/Feature
+    
+    Added new feature
+
+[33mcommit 8835b698a6eb771f9ef4c0089a833486e2f7fb47[m
+Author: vasyarv <vasily.ryazanov@phystech.edu>
+Date:   Thu Nov 10 15:39:39 2016 +0300
+
+    Added new feature
+
+[33mcommit 98ce6a153808e39c669397613505b6fa43a557b4[m
+Author: Timofey Khirianov <tkhirianov@gmail.com>
+Date:   Tue Oct 20 09:25:35 2015 +0300
+
+    Убрал дебажный скринкаст
+
+[33mcommit 0b3d9bee6b80676f860c7c0e1253631788d476ab[m
+Author: Timofey Khirianov <tkhirianov@gmail.com>
+Date:   Tue Oct 20 09:11:10 2015 +0300
+
+    Результаты трудофф
+
+[33mcommit 1c26d4c97dbfd4e223cb66e9fcc058e0f7284085[m
+Author: Timofey Khirianov <tkhirianov@gmail.com>
+Date:   Sat Oct 17 22:44:59 2015 +0300
+
+    Initial commit
