@@ -117,7 +117,7 @@ def main():
 
     root = tkinter.Tk()
     # космическое пространство отображается на холсте типа Canvas
-    space = tkinter.Canvas(root, width=window_width, height=window_height, bg="black")
+    space = tkinter.Canvas(root, width=window_width, height=window_height, bg="gray")
     space.pack(side=tkinter.TOP)
     # нижняя панель с кнопками
     frame = tkinter.Frame(root)
@@ -145,8 +145,16 @@ def main():
     time_label = tkinter.Label(frame, textvariable=displayed_time, width=30)
     time_label.pack(side=tkinter.RIGHT)
 
+    objects = read_space_objects_data_from_file('solar_system.txt')
+    
+    for obj in objects:
+        if obj.type == 'star':
+            create_star_image(space,obj)
+        elif obj.type == 'planet':
+            create_star_image(space,obj)
     root.mainloop()
     print('Modelling finished!')
+
 
 if __name__ == "__main__":
     main()
