@@ -1,125 +1,197 @@
 # coding: utf-8
 # license: GPLv3
 
-import pygame as pg
-import pygame_widgets
-from solar_world import World
-from solar_vis import calculate_scale_factor, Drawer, Menu
-from solar_model import recalculate_space_objects_positions
-from solar_input import read_space_objects_data_from_yaml, write_space_objects_data_to_yaml
-from solar_stats import check_system, calculate_speed, calculate_distance, show_graph
-import time
-import numpy as np
-import time 
+import tkinter
+from tkinter.filedialog import *
+from solar_vis import *
+from solar_model import *
+from solar_input import *
+
+perform_execution = False
+"""Флаг цикличности выполнения расчёта"""
+
+physical_time = 0
+"""Физическое время от начала расчёта.
+Тип: float"""
+
+displayed_time = None
+"""Отображаемое на экране время.
+Тип: переменная tkinter"""
+
+time_step = None
+"""Шаг по времени при моделировании.
+Тип: float"""
+
+space_objects = []
+"""Список космических объектов."""
 
 
-def execution(delta, world: World, menu: Menu) -> None:
+def execution():
     """Функция исполнения -- выполняется циклически, вызывая обработку всех небесных тел,
     а также обновляя их положение на экране.
-    Цикличность выполнения зависит от значения переменной perform_execution в объекте типа World.
+    Цикличность выполнения зависит от значения глобальной переменной perform_execution.
     При perform_execution == True функция запрашивает вызов самой себя по таймеру через от 1 мс до 100 мс.
     """
-    if world.perform_execution:
-        recalculate_space_objects_positions(world.space_objects, world.scale_factor, menu.get_slider_value())
-        world.model_time += delta
-    if check_system(world.space_objects):
-        world.graph_time = np.append(world.graph_time, world.model_time)
-        world.graph_speed = np.append(world.graph_speed, calculate_speed(world.space_objects))
-        world.graph_S = np.append(world.graph_S, calculate_distance(world.space_objects))
+    global physical_time
+    global displayed_time
+    recalculate_space_objects_positions(space_objects, time_step.get())
+    for body in space_objects:
+        update_object_position(space, body)
+    physical_time += time_step.get()
+    displayed_time.set("%.1f" % physical_time + " seconds gone")
+    save_statistics(space_objects)
+    if is_one_satellite:
+        make_point(satellite, physical_time, ax_v, ax_r, ax_vr)
+    if perform_execution:
+        space.after(101 - int(time_speed.get()), execution)
 
 
-def start_execution(world: World) -> None:
-    """
-    Обработчик события нажатия на кнопку Start.
+def start_execution():
+    """Обработчик события нажатия на кнопку Start.
     Запускает циклическое исполнение функции execution.
     """
-    world.perform_execution = True
+    global perform_execution
+    perform_execution = True
+    start_button['text'] = "Pause"
+    start_button['command'] = stop_execution
+
+    execution()
+    print('Started execution...')
 
 
-def pause_execution(world: World) -> None:
-    """
-    Останавливает выполнение программы
-    """
-    world.perform_execution = False
-
-
-def stop_execution(world: World) -> None:
+def stop_execution():
     """Обработчик события нажатия на кнопку Start.
     Останавливает циклическое исполнение функции execution.
     """
-    world.alive = False
+    global perform_execution
+    perform_execution = False
+    start_button['text'] = "Start"
+    start_button['command'] = start_execution
+    print('Paused execution.')
+    if is_one_satellite:
+        plt.show()
 
 
-def open_file(world: World, menu: Menu) -> None:
+def open_file_dialog():
     """Открывает диалоговое окно выбора имени файла и вызывает
     функцию считывания параметров системы небесных тел из данного файла.
-    Считанные объекты сохраняются в список space_objects в объекте типа World
+    Считанные объекты сохраняются в глобальный список space_objects
     """
-    in_filename = './configs/systems/yaml/' + menu.submit_box.getText() + '.yaml'
-    try:
-        world.space_objects = read_space_objects_data_from_yaml(in_filename)
-    except:
-        print("Problems with loading file")
-        in_filename = './configs/systems/yaml/one_satellite.yaml'
-        world.space_objects = read_space_objects_data_from_yaml(in_filename)
-    world.drawable_objects = world.space_objects
-    max_distance = max([max(abs(obj.x), abs(obj.y)) for obj in world.space_objects])
-    world.scale_factor = calculate_scale_factor(max_distance, world.scale_factor)
+    global space_objects
+    global perform_execution
+    global is_one_satellite
+    global satellite
+    perform_execution = False
+    for obj in space_objects:
+        space.delete(obj.image)  # удаление старых изображений планет
+    in_filename = askopenfilename(filetypes=(("Text file", ".txt"),))
+    space_objects = read_space_objects_data_from_file(in_filename)
+    max_distance = max([max(abs(obj.x), abs(obj.y)) for obj in space_objects])
+    print([(obj.x, obj.y) for obj in space_objects])
+    calculate_scale_factor(max_distance)
+
+    is_one_satellite = False
+    sattelite = None
+    condition1 = len(space_objects) == 2
+    condition2 = False
+    if condition1:
+        first_two = [space_objects[0].type, space_objects[1].type]
+        if "planet" == first_two[0]:
+            satellite = space_objects[0]
+            condition2 = True
+        elif "planet" == first_two[1]:
+            satellite = space_objects[1]
+            condition2 = True
+        if condition2:
+            if "star" in first_two:
+                is_one_satellite = True
+                global ax_v, ax_r, ax_vr
+
+                ax_v = plt.subplot(311)
+                ax_r = plt.subplot(312)
+                ax_vr = plt.subplot(313)
+
+                ax_v.set_xlabel(r"$t$, с")
+                ax_v.set_ylabel(r"$V, м/с$")
+
+                ax_r.set_xlabel(r"$t$, с")
+                ax_r.set_ylabel(r"$r, м$")
+
+                ax_vr.set_xlabel(r"$r, м$")
+                ax_vr.set_ylabel(r"$V, м/с$")
+
+                ax_r.grid(which='major',
+                          color='k')
+
+                ax_v.grid(which='major', color='k')
+
+                ax_vr.grid(which='major', color='k')
+
+    for obj in space_objects:
+        if obj.type == 'star':
+            create_star_image(space, obj)
+        elif obj.type == 'planet':
+            create_planet_image(space, obj)
+        else:
+            raise AssertionError()
 
 
-
-def handle_events(events, world: World) -> None:
+def save_file_dialog():
+    """Открывает диалоговое окно выбора имени файла и вызывает
+    функцию считывания параметров системы небесных тел из данного файла.
+    Считанные объекты сохраняются в глобальный список space_objects
     """
-    Обрабатывает действия пользователя и вызывает реакцию интерфейса и всей программы на них
-    """
-    for event in events:
-        if event.type == pg.QUIT:
-            world.alive = False
-    pygame_widgets.update(events)
+    out_filename = asksaveasfilename(filetypes=(("Text file", ".txt"),))
+    write_space_objects_data_to_file(out_filename, space_objects)
 
 
 def main():
     """Главная функция главного модуля.
     Создаёт объекты графического дизайна библиотеки tkinter: окно, холст, фрейм с кнопками, кнопки.
     """
-    print("Modelling started!")
+    global physical_time
+    global displayed_time
+    global time_step
+    global time_speed
+    global space
+    global start_button
 
-    pg.init()
-    
-    width = 1400
-    height = 700
-    scaling_factor = 1
-    #screen = pg.display.set_mode((width, height))
-    win = pg.display.set_mode((width*scaling_factor, height*scaling_factor))
-    clock = pg.time.Clock()
-    clock.tick(120) 
+    clear_statistics()
+    print('Modelling started!')
+    physical_time = 0
 
-    screen = pg.Surface((width, height))
-    world = World()
-    menu = Menu(
-        screen,
-        pause_callback=lambda: pause_execution(world),
-        stop_callback=lambda: stop_execution(world),
-        play_callback=lambda: start_execution(world),
-        load_callback=lambda: open_file(world, menu),
-    )
-    drawer = Drawer(screen, menu)
-    world.perform_execution = False
+    root = tkinter.Tk()
+    # космическое пространство отображается на холсте типа Canvas
+    space = tkinter.Canvas(root, width=window_width, height=window_height, bg="black")
+    space.pack(side=tkinter.TOP)
+    # нижняя панель с кнопками
+    frame = tkinter.Frame(root)
+    frame.pack(side=tkinter.BOTTOM)
 
-    while world.alive:
-        tick = time.time_ns() 
-        execution(1, world, menu)
-        drawer.update(world.drawable_objects, world.scale_factor, tick)
-        handle_events(pg.event.get(), world)
-        win.blit(pg.transform.scale(screen, win.get_rect().size), (0, 0))
-        drawer.display_update()
+    start_button = tkinter.Button(frame, text="Start", command=start_execution, width=6)
+    start_button.pack(side=tkinter.LEFT)
 
-    write_space_objects_data_to_yaml("output.yaml", world.space_objects)
-    if check_system(world.space_objects):
-        show_graph(world.graph_time, world.graph_speed, world.graph_S)
+    time_step = tkinter.DoubleVar()
+    time_step.set(1)
+    time_step_entry = tkinter.Entry(frame, textvariable=time_step)
+    time_step_entry.pack(side=tkinter.LEFT)
 
-    print("Modelling finished!")
+    time_speed = tkinter.DoubleVar()
+    scale = tkinter.Scale(frame, variable=time_speed, orient=tkinter.HORIZONTAL)
+    scale.pack(side=tkinter.LEFT)
 
+    load_file_button = tkinter.Button(frame, text="Open file...", command=open_file_dialog)
+    load_file_button.pack(side=tkinter.LEFT)
+    save_file_button = tkinter.Button(frame, text="Save to file...", command=save_file_dialog)
+    save_file_button.pack(side=tkinter.LEFT)
+
+    displayed_time = tkinter.StringVar()
+    displayed_time.set(str(physical_time) + " seconds gone")
+    time_label = tkinter.Label(frame, textvariable=displayed_time, width=30)
+    time_label.pack(side=tkinter.RIGHT)
+
+    root.mainloop()
+    print('Modelling finished!')
 
 if __name__ == "__main__":
     main()
